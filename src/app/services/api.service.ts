@@ -10,15 +10,6 @@ export class ApiService {
 
 	maxNumberComics:number;
 
-	serviceImg:string;
-	serviceTitle:string;
-
-	comic = {
-		id: 0,
-		img: '',
-		title: ''
-	}
-
 	constructor(private http: HttpClient) { }
 
 	getRandomComic() {
@@ -26,22 +17,14 @@ export class ApiService {
 		return this.http.get<any>(`${this.xkcdUrl}${random}`).toPromise();
 	}
 
-	setRandomComic() {
-		let random = Math.floor(Math.random() * this.maxNumberComics+1);
-		this.http.get<any>(`${this.xkcdUrl}${random}`).toPromise().then(comic => {
-			this.comic.id = comic.num
-			this.comic.img = comic.img;
-			this.comic.title = comic.title;
-		});
+	getComic(comicId) {
+		return this.http.get<any>(`${this.xkcdUrl}${comicId}`).toPromise();
 	}
 
 	setMaxNumber(){
 		this.http.get<any>(`${this.xkcdUrl}latest`).subscribe(comic => {
 			this.maxNumberComics = comic.num;
+			console.log('Max number is set to: ' + this.maxNumberComics)
 		});
-	}
-
-	returnImgString() {
-		return this.comic.img;
 	}
 }

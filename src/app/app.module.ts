@@ -9,6 +9,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule} from '@angular/material/menu';
 import { MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
+import {Location, LocationStrategy, PathLocationStrategy} from '@angular/common';
+
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HeaderComponent } from './components/header/header.component';
@@ -21,19 +23,14 @@ import { LoaderInterceptor } from './loader.interceptor';
 
 const STATES = [
 	{ name: 'welcome', url: '/', component: WelcomeComponent},
-	{ name: 'getcomic',
-		url: '/comic',
-		component: ComicsComponent,
-		resolve: [
-		{
-			token: "comicnum",
-			deps: [Transition, ApiService],
-			resolveFn: (trans: Transition, apiService:ApiService) => {
-			apiService.setRandomComic();
-			}
-		}
-		]
-	},
+	{ name: 'getcomicid', url: '/:id', component: ComicsComponent,
+	resolve: [
+	  {
+		token: "comic",
+		deps: [Transition, ApiService],
+		resolveFn: (trans: Transition, apiService:ApiService) => apiService.getComic(trans.params().id)
+	  }
+	]},
 ]
 @NgModule({
 	declarations: [
@@ -56,6 +53,7 @@ const STATES = [
 	providers: [
 		ApiService,
 		LoaderService,
+		Location, {provide: LocationStrategy, useClass: PathLocationStrategy},
 		{ provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true }
 	],
 	bootstrap: [AppComponent]
